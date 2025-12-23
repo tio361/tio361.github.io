@@ -17,7 +17,6 @@
   </div>
 
   <script>
-    // ambil counter dari localStorage
     let failCount = localStorage.getItem('failCount') ? parseInt(localStorage.getItem('failCount')) : 0;
 
     function checkPassword() {
@@ -25,7 +24,7 @@
       const pw = document.getElementById("pw").value;
 
       if (pw === correctPw) {
-        localStorage.setItem('failCount', 0); // reset counter
+        localStorage.setItem('failCount', 0);
         window.location.href = "home.html";
       } else {
         failCount++;
@@ -40,7 +39,6 @@
       }
     }
 
-    // kalau sudah gagal 3x sebelum reload, langsung tampilkan foto
     if(failCount >= 3){
       document.getElementById("failBox").style.display = "block";
     }
