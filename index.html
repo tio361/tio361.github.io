@@ -24,22 +24,38 @@
 </head>
 
 <body>
-  <h2>🔐 Protected</h2>
-  <input id="pw" type="password" placeholder="Password">
-  <button onclick="check()">Enter</button>
-  <p id="msg"></p>
+<h2>LOGIN</h2>
 
-  <script>
-    function check(){
-      const ok = "WORLDSIGHT";
-      const v = document.getElementById("pw").value;
-      if(v === ok){
-        document.body.innerHTML = "<h1>ACCESS GRANTED</h1>";
-      } else {
-        document.getElementById("msg").innerText = "Wrong password";
-      }
+<input type="password" id="pw" placeholder="Masukkan Password">
+<button type="button" onclick="login()">ENTER</button>
+
+<p id="msg" style="color:red;"></p>
+
+<div id="failBox" style="display:none; text-align:center;">
+  <img src="fail.jpg" width="200">
+  <p>UDAH 3X MASIH GAGAL 😈</p>
+</div>
+
+</body>
+
+<script>
+let failCount = 0;
+
+function login() {
+  var pw = document.getElementById("pw").value;
+
+  if (pw === "WORLDSIGHT") {
+    window.location.href = "home.html";
+  } else {
+    failCount++;
+
+    if (failCount < 3) {
+      document.getElementById("msg").innerText =
+        "Salah haha lu jelek (" + failCount + ")";
+    } else {
+      document.getElementById("failBox").style.display = "block";
+      document.getElementById("msg").innerText = "";
     }
-
-    document.addEventListener('contextmenu', e => e.preventDefault());
-    document.onkeydown = function(e){
-      if(e.keyCode==123 || (e.ctrlKey && e.shiftKey && ['I','C','J'].includes(e.key))
+  }
+}
+</script>
