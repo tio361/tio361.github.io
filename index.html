@@ -5,24 +5,41 @@
   <title>Secure Site</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Security Headers (client-side) -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'">
   <meta http-equiv="X-Frame-Options" content="DENY">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta http-equiv="Referrer-Policy" content="no-referrer">
+  <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=()">
+  <meta name="robots" content="noindex, nofollow">
 
   <style>
     body {
-      background: #0b0b0b;
-      color: #00ffcc;
-      font-family: monospace;
-      text-align: center;
-      padding-top: 40px;
+      background:#0b0b0b;
+      color:#00ffcc;
+      font-family:monospace;
+      text-align:center;
+      padding-top:40px;
     }
   </style>
 </head>
+
 <body>
-  <h1>🔒 SECURED</h1>
-  <p>Website aktif & harden basic</p>
-</body>
-</html>
+  <h2>🔐 Protected</h2>
+  <input id="pw" type="password" placeholder="Password">
+  <button onclick="check()">Enter</button>
+  <p id="msg"></p>
+
+  <script>
+    function check(){
+      const ok = "WORLDSIGHT";
+      const v = document.getElementById("pw").value;
+      if(v === ok){
+        document.body.innerHTML = "<h1>ACCESS GRANTED</h1>";
+      } else {
+        document.getElementById("msg").innerText = "Wrong password";
+      }
+    }
+
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.onkeydown = function(e){
+      if(e.keyCode==123 || (e.ctrlKey && e.shiftKey && ['I','C','J'].includes(e.key))
