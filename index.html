@@ -1,47 +1,30 @@
-<!DOCTYPE html>
+<<!DOCTYPE html>
 <html>
 <head>
-  <title>Login Page</title>
+  <title>Login Puzzle</title>
 </head>
-<body>
-  <h2>LOGIN</h2>
+<body style="text-align:center; margin-top:50px; font-family:sans-serif;">
 
-  <input type="password" id="pw" placeholder="Masukkan Password">
-  <button type="button" onclick="checkPassword()">ENTER</button>
+<h2>🔐 LOGIN</h2>
 
-  <p id="msg" style="color:red;"></p>
+<input type="password" id="pw" placeholder="Masukkan Password">
+<button onclick="login()">ENTER</button>
 
-  <div id="failBox" style="display:none; text-align:center;">
-    <img src="fail.jpg" width="200">
-    <p>UDAH 3X MASIH GAGAL 😈</p>
-  </div>
+<p id="msg" style="color:red;"></p>
 
-  <script>
-    let failCount = localStorage.getItem('failCount') ? parseInt(localStorage.getItem('failCount')) : 0;
+<script>
+function login(){
+  const pw = "WORLDSIGHT";   // Password yang bener
+  const input = document.getElementById("pw").value;
 
-    function checkPassword() {
-      const correctPw = "WORLDSIGHT";
-      const pw = document.getElementById("pw").value;
+  if(input === pw){
+    // pindah ke halaman hadiah
+    window.location.href = "home.html";
+  } else {
+    document.getElementById("msg").innerText = "Password salah!";
+  }
+}
+</script>
 
-      if (pw === correctPw) {
-        localStorage.setItem('failCount', 0);
-        window.location.href = "home.html";
-      } else {
-        failCount++;
-        localStorage.setItem('failCount', failCount);
-
-        if (failCount < 3) {
-          document.getElementById("msg").innerText = "Salah haha lu jelek (" + failCount + ")";
-        } else {
-          document.getElementById("msg").innerText = "";
-          document.getElementById("failBox").style.display = "block";
-        }
-      }
-    }
-
-    if(failCount >= 3){
-      document.getElementById("failBox").style.display = "block";
-    }
-  </script>
 </body>
 </html>
