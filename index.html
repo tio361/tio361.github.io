@@ -1,51 +1,112 @@
-
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login Protected</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      margin-top: 100px;
-    }
-    input {
-      padding: 10px;
-      font-size: 16px;
-      margin: 5px;
-    }
-    button {
-      padding: 10px 20px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-    #msg {
-      color: red;
-      margin-top: 10px;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>ROOT TERMINAL</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+  margin:0;
+  background:black;
+  color:#00ff00;
+  font-family:"Courier New", monospace;
+  overflow:hidden;
+}
+
+#screen{
+  padding:20px;
+  font-size:14px;
+}
+
+.cursor{
+  animation: blink 1s infinite;
+}
+
+@keyframes blink{
+  0%{opacity:1}
+  50%{opacity:0}
+  100%{opacity:1}
+}
+
+input{
+  background:black;
+  color:#00ff00;
+  border:none;
+  outline:none;
+  font-family:inherit;
+  font-size:14px;
+  width:80%;
+}
+
+.fail{
+  color:red;
+}
+</style>
 </head>
+
 <body>
-  <h2>🔐 LOGIN</h2>
-  <input type="password" id="pw" placeholder="Masukkan Password">
-  <button type="button" onclick="checkPassword()">ENTER</button>
-  <p id="msg"></p>
 
-  <script>
-    function checkPassword() {
-      const pw = "WORLDSIGHT"; // Password
-      const input = document.getElementById("pw").value;
+<div id="screen"></div>
 
-      if(input === pw){
-        // Kalau password benar → redirect ke home.html
-        window.location.href = "home.html";
-      } else {
-        // Kalau salah
-        document.getElementById("msg").innerText = "Salah password 😈";
-      }
-    }
-  </script>
+<script>
+const screen = document.getElementById("screen");
+
+const boot = [
+  "[BOOT] Initializing kernel v5.13.0",
+  "[BOOT] Loading system modules...",
+  "[OK] Memory check passed",
+  "[OK] Network interface eth0 active",
+  "[OK] Connecting to remote node...",
+  "[SECURITY] Encrypted tunnel established",
+  "[SECURITY] Firewall bypassed",
+  "[INFO] Fetching credentials...",
+  "[WARNING] Unauthorized access detected",
+  "[SYSTEM] Root permission required",
+  "",
+  "════════════════════════════════════",
+  "   SECURE TERMINAL ACCESS REQUIRED",
+  "════════════════════════════════════",
+  "",
+  "Enter password to continue:"
+];
+
+let i = 0;
+
+function typeBoot(){
+  if(i < boot.length){
+    screen.innerHTML += boot[i] + "<br>";
+    i++;
+    setTimeout(typeBoot, 120);
+  }else{
+    screen.innerHTML += "<br>> ";
+    screen.innerHTML += `<input type="password" id="pw" autofocus>
+    <span class="cursor">█</span>
+    <div id="msg"></div>`;
+    document.getElementById("pw").addEventListener("keydown", e=>{
+      if(e.key === "Enter") check();
+    });
+  }
+}
+
+typeBoot();
+
+function check(){
+  const pw = document.getElementById("pw").value;
+  const msg = document.getElementById("msg");
+
+  if(pw === "WORLDSIGHT"){
+    screen.innerHTML += "<br>[ACCESS GRANTED]<br>";
+    screen.innerHTML += "[SYSTEM] Root shell unlocked<br>";
+    screen.innerHTML += "[SYSTEM] Redirecting to reward server...<br>";
+    setTimeout(()=>{
+      window.location.href="home.html";
+    },2000);
+  }else{
+    msg.innerHTML = "<p class='fail'>[ACCESS DENIED]</p>";
+  }
+}
+</script>
+
 </body>
 </html>
