@@ -1,58 +1,108 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>ROOT TERMINAL</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <title>ROOT ACCESS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      background: black;
+      color: #ff1a1a;
+      font-family: "Courier New", monospace;
+      overflow: hidden;
+      text-shadow: 0 0 5px red;
+    }
 
-<style>
-body{
-  margin:0;
-  background:black;
-  color:#00ff00;
-  font-family:"Courier New", monospace;
-  overflow:hidden;
-}
+    #terminal {
+      padding: 20px;
+      font-size: 14px;
+      line-height: 1.4;
+      max-width: 900px;
+      margin: auto;
+      margin-top: 40px;
+      border: 2px solid red;
+      box-shadow: 0 0 20px red;
+      min-height: 400px;
+    }
 
-#screen{
-  padding:20px;
-  font-size:14px;
-}
+    .cursor {
+      display: inline-block;
+      width: 10px;
+      animation: blink 1s infinite;
+    }
 
-.cursor{
-  animation: blink 1s infinite;
-}
+    @keyframes blink {
+      0% { opacity: 1; }
+      50% { opacity: 0; }
+      100% { opacity: 1; }
+    }
 
-@keyframes blink{
-  0%{opacity:1}
-  50%{opacity:0}
-  100%{opacity:1}
-}
+    input {
+      background: transparent;
+      border: none;
+      color: red;
+      outline: none;
+      font-family: inherit;
+      font-size: 14px;
+      width: 200px;
+    }
 
-input{
-  background:black;
-  color:#00ff00;
-  border:none;
-  outline:none;
-  font-family:inherit;
-  font-size:14px;
-  width:80%;
-}
+    .glitch {
+      animation: glitch 0.2s infinite;
+    }
 
-.fail{
-  color:red;
-}
-</style>
+    @keyframes glitch {
+      0% { text-shadow: 2px 0 red; }
+      50% { text-shadow: -2px 0 darkred; }
+      100% { text-shadow: 2px 0 red; }
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .scanlines::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,0,0,0.03),
+        rgba(255,0,0,0.03) 1px,
+        transparent 1px,
+        transparent 3px
+      );
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    .loading-bar {
+      width: 100%;
+      height: 15px;
+      border: 1px solid red;
+      margin-top: 10px;
+    }
+
+    .bar {
+      height: 100%;
+      width: 0;
+      background: red;
+      box-shadow: 0 0 10px red;
+    }
+  </style>
 </head>
+<body class="scanlines">
 
-<body>
-
-<div id="screen"></div>
+<div id="terminal"></div>
 
 <script>
-const screen = document.getElementById("screen");
+const terminal = document.getElementById("terminal");
 
-const boot = [
+// PASSWORD LAMA KAMU TARUH DI SINI
+const PASSWORD = "1234"; // GANTI kalau mau
+
+const bootLines = [
   "[BOOT] Initializing kernel v5.13.0",
   "[BOOT] Loading system modules...",
   "[OK] Memory check passed",
@@ -63,49 +113,107 @@ const boot = [
   "[INFO] Fetching credentials...",
   "[WARNING] Unauthorized access detected",
   "[SYSTEM] Root permission required",
-  "",
-  "════════════════════════════════════",
-  "   SECURE TERMINAL ACCESS REQUIRED",
-  "════════════════════════════════════",
+  "-----------------------------------------",
+  "SECURE TERMINAL ACCESS REQUIRED",
+  "-----------------------------------------",
   "",
   "Enter password to continue:"
 ];
 
-let i = 0;
+let lineIndex = 0;
 
-function typeBoot(){
-  if(i < boot.length){
-    screen.innerHTML += boot[i] + "<br>";
+function typeLine(text, callback) {
+  let i = 0;
+  const interval = setInterval(() => {
+    terminal.innerHTML += text.charAt(i);
     i++;
-    setTimeout(typeBoot, 120);
-  }else{
-    screen.innerHTML += "<br>> ";
-    screen.innerHTML += `<input type="password" id="pw" autofocus>
-    <span class="cursor">█</span>
-    <div id="msg"></div>`;
-    document.getElementById("pw").addEventListener("keydown", e=>{
-      if(e.key === "Enter") check();
+    if (i >= text.length) {
+      clearInterval(interval);
+      terminal.innerHTML += "<br>";
+      if (callback) callback();
+    }
+  }, 20);
+}
+
+function bootSequence() {
+  if (lineIndex < bootLines.length) {
+    typeLine(bootLines[lineIndex], () => {
+      lineIndex++;
+      bootSequence();
     });
+  } else {
+    showInput();
   }
 }
 
-typeBoot();
+function showInput() {
+  const inputDiv = document.createElement("div");
+  inputDiv.innerHTML = "> <input type='password' id='pw' autofocus> <span class='cursor'>█</span>";
+  terminal.appendChild(inputDiv);
 
-function check(){
-  const pw = document.getElementById("pw").value;
-  const msg = document.getElementById("msg");
+  const input = document.getElementById("pw");
+  input.focus();
 
-  if(pw === "WORLDSIGHT"){
-    screen.innerHTML += "<br>[ACCESS GRANTED]<br>";
-    screen.innerHTML += "[SYSTEM] Root shell unlocked<br>";
-    screen.innerHTML += "[SYSTEM] Redirecting to reward server...<br>";
-    setTimeout(()=>{
-      window.location.href="home.html";
-    },2000);
-  }else{
-    msg.innerHTML = "<p class='fail'>[ACCESS DENIED]</p>";
+  input.addEventListener("keydown", function(e) {
+    if (e.key === "Enter") {
+      const val = input.value;
+      input.disabled = true;
+      checkPassword(val);
+    }
+  });
+}
+
+function checkPassword(val) {
+  if (val === PASSWORD) {
+    accessGranted();
+  } else {
+    terminal.innerHTML += "<span class='glitch'>ACCESS DENIED</span><br>";
+    terminal.innerHTML += "System locked. Try again.<br><br>";
+    showInput();
   }
 }
+
+function accessGranted() {
+  terminal.innerHTML += "<br><span class='glitch'>ACCESS GRANTED</span><br>";
+  terminal.innerHTML += "Decrypting data packets...<br>";
+  terminal.innerHTML += "Bypassing final checkpoint...<br>";
+  terminal.innerHTML += "Loading reward module...<br><br>";
+
+  const barWrap = document.createElement("div");
+  barWrap.className = "loading-bar";
+  const bar = document.createElement("div");
+  bar.className = "bar";
+  barWrap.appendChild(bar);
+  terminal.appendChild(barWrap);
+
+  let width = 0;
+  const loadInt = setInterval(() => {
+    width += 2;
+    bar.style.width = width + "%";
+    if (width >= 100) {
+      clearInterval(loadInt);
+      showReward();
+    }
+  }, 40);
+}
+
+function showReward() {
+  terminal.innerHTML += "<br><br>";
+  terminal.innerHTML += "MISSION COMPLETE<br>";
+  terminal.innerHTML += "-----------------------------------<br>";
+  terminal.innerHTML += "cieeee berhasil nih buat you 😏😏😏<br>";
+  terminal.innerHTML += "muamshsjmuaahh 😘😘<br>";
+  terminal.innerHTML += "selamat kamu menyelesaikan Puzzle Hacking Me<br>";
+  terminal.innerHTML += "Reward kamu: 💰 Rp10.000<br>";
+  terminal.innerHTML += "-----------------------------------<br>";
+  terminal.innerHTML += "SYSTEM STATUS: STABLE<br>";
+  terminal.innerHTML += "TRACE: CLEAN<br>";
+  terminal.innerHTML += "LOGS: ERASED<br>";
+  terminal.innerHTML += "CONNECTION: CLOSED<br>";
+  terminal.innerHTML += "<br>END OF SESSION<br>";
+}
+
+bootSequence();
 </script>
 
 </body>
